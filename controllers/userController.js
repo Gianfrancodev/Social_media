@@ -29,4 +29,67 @@ module.exports = {
             return res.status(500).json(err)
         }
     },
+    async updateUser(req, res) {
+        try {
+            const user = await User.findOneAndUpdate(
+                { _id: req.params.userId },
+                { $set: req.body },
+                { runValidators: true, new: true }
+            )
+
+            if(!user) res.status(404).json({ message: 'No user found' })
+
+            return res.json(user)
+        } catch (err) {
+            res.status(500).json(err)
+        }
+    },
+    async deleteUser(req, res) {
+        try {
+            const user = await User.findByIdAndDelete({ _id: req.params.userId })
+
+            if(!user) res.status(404).json({ message: 'No user found' })
+
+            await Thought.deleteMany({ _id: { $in: user.thoughts }})
+            return res.json({ message: 'User and thoughts deleted' })
+        } catch (err) {
+            res.status(500).json(err)
+        }
+    },
+    async addFriend(req, res) {
+        try {
+            const friend = await User.findOne({ username: req.body.friend })
+            if(!friend) return res.status(500).json({ message: 'No friend found' })
+
+            const user = await User.findOneAndUpdate(
+                { username: req.body.username },
+                { $push: { friends: friend._id.toString() }}
+            )
+            if(!user) res.status(404).json({ message: 'No user found' })
+
+            return res.json(user)
+
+        } catch (err) {
+            console.error(err)
+            return res.status(500).json(err)
+        }
+    }, 
+    async removeFriend(req, res) {
+        try {
+            const friend = await User.findOne({ username: req.body.friend })
+            if(!friend) return res.status(500).json({ message: 'No friend found' })
+
+            const user = await User.findOneAndUpdate(
+                { username: req.body.username },
+                { $pull: { friends: friend._id.toString() }}
+            )
+            if(!user) res.status(404).json({ message: 'No user found' })
+
+            return res.json(user)
+
+        } catch (err) {
+            console.error(err)
+            return res.status(500).json(err)
+        }
+    }, 
 }
