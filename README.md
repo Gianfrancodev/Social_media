@@ -19,4 +19,4 @@ To install: clone the repo, and then run 'npm install express mongoose' to insta
 To use this project, you need to use Insomnia REST client to see the database.
 
 ## Video
-[Demonstration Video]()
+[Demonstration Video](https://drive.google.com/file/d/1D2giOFQTY-XlP8BBgNI5CkALnwyx0FJv/view)
